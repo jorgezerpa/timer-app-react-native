@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { StyleSheet, View, Text,Pressable, Dimensions } from 'react-native';
+import { StyleSheet, View, Text,Pressable, Dimensions, TextInput } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useStopwatch } from 'react-timer-hook';
 import { AppContext } from '../context/AppContext';
+import { PALETTE } from '../Constants';
 
 export default function Chronometer({ id }) {
     const { state, actions, dispatch } = useContext(AppContext);
@@ -15,7 +17,7 @@ export default function Chronometer({ id }) {
 
     const handleReset = () => {
       setIsInit(false);
-      reset();
+      reset(null, false);
     }
     
     const handlePause = () => {
@@ -29,15 +31,20 @@ export default function Chronometer({ id }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.numbers} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
+            <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
             <View style={styles.buttonContainer}>
               
               <Pressable style={styles.button} onPress={isRunning ? handlePause : handleStart }>
-                <Text style={styles.buttonText}>{ isRunning ? 'parar' : 'iniciar' } </Text>
+                <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
+                  { !isInit && <Text style={styles.buttonText}>{ isRunning ? 'parar' : 'iniciar' } </Text>}
+                  { isInit && <Text style={styles.buttonText}> { isRunning ? 'parar' : 'continuar' }  </Text> }
+                </LinearGradient>
               </Pressable>
               { (!isRunning && isInit ) && (
                 <Pressable style={styles.button} onPress={ handleReset }>
+                <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.secondary.main, PALETTE.secondary.light]}>
                   <Text style={styles.buttonText}> reiniciar </Text>
+                </LinearGradient>
                 </Pressable>
               )
 
@@ -46,21 +53,22 @@ export default function Chronometer({ id }) {
             </View>
             {(!isRunning && isInit ) && (
               <View style={styles.buttonContainer}>
-                <Pressable style={styles.buttonDelete} onPress={ handleRemoveChrono }>
+                <Pressable style={{...styles.button, marginTop:20}} onPress={()=>{handleRemoveChrono()}  }>
+                <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.danger.main, PALETTE.danger.light]}>
                   <Text style={styles.buttonText}>borrar</Text>
+                </LinearGradient>
                 </Pressable>
               </View>
             )}
 
             <View style={styles.spacing}></View>
-            <Text style={styles.title}>Block 1</Text>
+            <TextInput style={styles.title} placeholder='bloque' />
         </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '50%',
     paddingTop: 20,
     position:'relative',
     height: Dimensions.get('window').height/3,
@@ -70,8 +78,7 @@ const styles = StyleSheet.create({
   },  
   numbers: {
     textAlign: 'center',
-    fontSize: 30,
-    color: '#444',
+    color: '#666',
   },
   buttonContainer: {
     alignItems: 'center',
@@ -80,20 +87,16 @@ const styles = StyleSheet.create({
   },  
   button:{
     marginHorizontal: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 0,
     width: 80,
-    backgroundColor:'#44f',
+    height: 40,
     borderRadius: 13
   },
-  buttonDelete:{
-    marginHorizontal: 1,
-    marginTop: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 0,
+  buttonGradient: {
     width: 80,
-    backgroundColor:'#44f',
-    borderRadius: 13
+    height: 40,
+    borderRadius: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     textAlign: 'center',
