@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Animated, View, StyleSheet, PanResponder, Text, Pressable, Dimensions } from "react-native";
 
-const App = ({ dropLimit,  children }) => {
+const App = ({ dropLimit, handleDeleteItem, children }) => {
   const pan = useRef(new Animated.ValueXY()).current;
   const DropLimit = useRef(dropLimit);
   const isDraggable = useRef(false);
@@ -50,8 +50,8 @@ const App = ({ dropLimit,  children }) => {
         }
 
         if(isDropArea.current){
-          console.log('dropped')
-          pan.flattenOffset(); //set actual posicion to 0,0. return actual difference
+          // pan.flattenOffset(); //set actual posicion to 0,0. return actual difference
+          handleDeleteItem();
         }
 
 

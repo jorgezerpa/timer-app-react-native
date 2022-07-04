@@ -30,7 +30,7 @@ export default function Chronometer({ id }) {
     }
 
     return (
-      <Draggable dropLimit={0}>
+      <Draggable dropLimit={200} handleDeleteItem={handleRemoveChrono} >
           <View style={{...styles.container, width: state.chronos.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
               <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
               <View style={styles.buttonContainer}>
