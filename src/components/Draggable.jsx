@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Animated, View, StyleSheet, PanResponder, Text, Pressable } from "react-native";
+import { Animated, View, StyleSheet, PanResponder, Text, Pressable, Dimensions } from "react-native";
 
-const App = ({ dropLimit }) => {
+const App = ({ dropLimit,  children }) => {
   const pan = useRef(new Animated.ValueXY()).current;
   const DropLimit = useRef(dropLimit);
   const isDraggable = useRef(false);
@@ -68,8 +68,8 @@ const App = ({ dropLimit }) => {
         }}
         {...panResponder.panHandlers}
       >
-        <Pressable onLongPress={()=>{isDraggable.current = true}} >
-          <View style={styles.box} />
+        <Pressable  onLongPress={()=>{isDraggable.current = true}} >
+          { children }
         </Pressable>
       </Animated.View>
     </View>
@@ -78,21 +78,12 @@ const App = ({ dropLimit }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    width: '100%',
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    margin: 0
   },
-  titleText: {
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: "bold"
-  },
-  box: {
-    height: 20,
-    width: 20,
-    backgroundColor: "blue",
-    borderRadius: 50
-  }
 });
 
 export default App;

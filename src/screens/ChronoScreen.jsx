@@ -3,6 +3,7 @@ import { View, ScrollView, StyleSheet, Pressable, Dimensions, Image } from 'reac
 import { AppContext } from '../context/AppContext';
 import Chronometer from '../components/Chronometer';
 import plusIcon from '../assets/plusIcon.png';
+import Draggable from '../components/Draggable';
 
 export default function ChronoScreen() {
   const { state, actions, dispatch } = useContext(AppContext);
@@ -38,15 +39,14 @@ export default function ChronoScreen() {
 
   return (
     <ScrollView >
-      <View style={styles.container}>
-        {state.chronos.map((item, index)=>(
-          <View key={item.id} style={{width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-            {item.chrono()}
+          <View style={styles.container}>
+            {state.chronos.map((item, index)=>(
+              <View key={item.id} style={{ width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+                  {item.chrono()}                
+              </View>
+            ))}
+            {AddButton()}
           </View>
-        ))}
-        {AddButton()}
-
-      </View>
     </ScrollView>
   )
 }

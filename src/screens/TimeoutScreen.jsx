@@ -3,7 +3,14 @@ import { StyleSheet, View, Text } from 'react-native'
 import Draggable from '../components/Draggable';
 
 export default function TimeoutScreen() {
+  
+  return (
+    <Text>holaaaaaa</Text>
+  )
+  
+  
   const [dropLimit, setDropLimit] = useState(null);
+
   
   return (
     <View style={styles.mainContainer}>
@@ -16,11 +23,9 @@ export default function TimeoutScreen() {
       </View>
       <View style={styles.ballContainer} />
       <View style={styles.row}>
-        <Draggable dropLimit={dropLimit} />
-        <Draggable dropLimit={dropLimit} />
-        <Draggable dropLimit={dropLimit} />
-        <Draggable dropLimit={dropLimit} />
-        <Draggable dropLimit={dropLimit} />
+        <Draggable dropLimit={dropLimit}>
+          <View style={{ width:50, height: 50, backgroundColor: 'blue' }} ></View>
+        </Draggable>
       </View>
     </View>
   )
