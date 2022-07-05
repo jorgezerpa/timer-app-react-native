@@ -9,24 +9,22 @@ export default function ChronoScreen() {
   const [itemWidth, setItemWidth] = useState(state.chronos.length > 3 ? 2 : 1);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Timeout
 
-  const handleAddChrono = () => {
-    dispatch(actions.addChrono(getChrono()))
+  const handleAddTimeout = () => {
+    dispatch(actions.addTimeout(getTimeout()))
 
   }
 
-  function getChrono(){
+  function getTimeout(){
     const id =  'id-false'+ Math.random()*100000;
     return ({
       id: id,
-      offset: null,
-      chrono: ()=>(<Timeout id={id} setIsDropArea={setIsDropArea}  />)
+      timeout: ()=>(<Timeout id={id} setIsDropArea={setIsDropArea}  />)
     })
   }
 
-
   const AddButton = () => (
     <View style={{ ...styles.AddContainer, width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
-      <Pressable style={styles.button} onPress={ handleAddChrono }>
+      <Pressable style={styles.button} onPress={ handleAddTimeout }>
         <Image
           style={styles.buttonImage}
           source={plusIcon}
@@ -40,9 +38,9 @@ export default function ChronoScreen() {
     <View>
       <ScrollView >
             <View style={styles.container}>
-              {state.chronos.map((item, index)=>(
+              {state.timeouts.map((item, index)=>(
                 <View key={item.id} style={{ width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-                    {item.chrono()}                
+                    {item.timeout()}                
                 </View>
               ))}
               {AddButton()}
@@ -98,3 +96,34 @@ const styles = StyleSheet.create({
 })
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+// import { View, Text } from 'react-native';
+// import Timeout from '../components/Timeout';
+
+
+// export default function TimeoutScreen() {
+//   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Chronometer
+
+//   return (
+//     <View>
+//       <Timeout setIsDropArea={setIsDropArea} />
+//     </View>
+//   )
+// }
