@@ -16,6 +16,8 @@ export default function Chronometer({ id, setIsDropArea }) {
     const [isInit, setIsInit] = useState(false);
     const isDropArea = useRef(false);
 
+    const [isEditing, setIsEditing] = useState(false);
+
     useEffect(()=>{
       if(isDropArea.current) setIsDropArea(true);
       if(!isDropArea.current) setIsDropArea(false);
@@ -45,12 +47,23 @@ export default function Chronometer({ id, setIsDropArea }) {
         start();
     }
 
+    const handleIsEditing = () => {
+        setIsEditing(true)
+    }
+    const handleBlur = () => {
+        setIsEditing(false)
+    }
+
     return (
       <Draggable setIsDropArea={setIsDropArea}  isDropArea={isDropArea} dropLimit={150} handleDeleteItem={handleRemoveTimeout} >
           <View style={{...styles.container, width: state.chronos.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-              <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
-              <View style={styles.buttonContainer}>
-                
+              <Pressable onPress={handleIsEditing}>
+                { !isEditing && <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
+                { isEditing && <TextInput selectTextOnFocus={true} onBlur={handleBlur} style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} /> }                
+              </Pressable>
+              
+
+              <View style={styles.buttonContainer}>  
                 {!isInit && (
                     <Pressable style={styles.button} onPress={ handleStart }>
                         <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
@@ -72,10 +85,7 @@ export default function Chronometer({ id, setIsDropArea }) {
                     </LinearGradient>
                   </Pressable>
                 )}
-            
               </View>
-              
-              
               
               <View style={styles.spacing}></View>
               <TextInput style={styles.title} placeholder='bloque' />
