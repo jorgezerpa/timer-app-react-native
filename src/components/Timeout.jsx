@@ -6,7 +6,7 @@ import { AppContext } from '../context/AppContext';
 import { PALETTE } from '../Constants';
 import Draggable from './Draggable';
 
-export default function Chronometer({ id, setIsDropArea }) {
+export default function Timeout({ id, setIsDropArea }) {
     const { state, actions, dispatch } = useContext(AppContext);
     const { seconds, minutes, hours, days, isRunning, start, pause, reset, } = useStopwatch({ });
     const [isInit, setIsInit] = useState(false);
@@ -76,52 +76,53 @@ export default function Chronometer({ id, setIsDropArea }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 20,
-    position:'relative',
-    height: Dimensions.get('window').height/3,
-    justifyContent: 'flex-start',
-    borderWidth: 2,
-    borderColor: "#ddd",
-  },  
-  numbers: {
-    textAlign: 'center',
-    color: '#666',
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginTop: 20,
-  },  
-  button:{
-    marginHorizontal: 1,
-    width: 80,
-    height: 40,
-    borderRadius: 13
-  },
-  buttonGradient: {
-    width: 80,
-    height: 40,
-    borderRadius: 13,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold'
-  },
-  title:{
-    width: '100%',
-    position: 'absolute',
-    textAlign: 'center',
-    fontSize: 20,
-    color: '#000',
-    bottom: 0,
-  },
-  spacing: {
-    height: 0,
-  }
-})
-
+    container: {
+      paddingTop: 20,
+      position:'relative',
+      height: Dimensions.get('window').height/3,
+      justifyContent: 'flex-start',
+      borderWidth: 2,
+      borderColor: "#ddd",
+    },  
+    numbers: {
+      textAlign: 'center',
+      color: '#666',
+    },
+    buttonContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      marginTop: 20,
+    },  
+    button:{
+      marginHorizontal: 1,
+      width: 80,
+      height: 40,
+      borderRadius: 13
+    },
+    buttonGradient: {
+      width: 80,
+      height: 40,
+      borderRadius: 13,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    buttonText: {
+      textAlign: 'center',
+      color: 'white',
+      fontWeight: 'bold'
+    },
+    title:{
+      width: '100%',
+      position: 'absolute',
+      textAlign: 'center',
+      fontSize: 20,
+      color: '#000',
+      bottom: 0,
+    },
+    spacing: {
+      height: 0,
+    }
+  })
+  
+  

@@ -1,58 +1,100 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native'
-import Draggable from '../components/Draggable';
+import React, { useContext, useState, useRef } from 'react'
+import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions, Image } from 'react-native';
+import { AppContext } from '../context/AppContext';
+import Timeout from '../components/Timeout';
+import plusIcon from '../assets/plusIcon.png';
 
-export default function TimeoutScreen() {
-  
-  return (
-    <Text>holaaaaaa</Text>
+export default function ChronoScreen() {
+  const { state, actions, dispatch } = useContext(AppContext);
+  const [itemWidth, setItemWidth] = useState(state.chronos.length > 3 ? 2 : 1);
+  const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Timeout
+
+  const handleAddChrono = () => {
+    dispatch(actions.addChrono(getChrono()))
+
+  }
+
+  function getChrono(){
+    const id =  'id-false'+ Math.random()*100000;
+    return ({
+      id: id,
+      offset: null,
+      chrono: ()=>(<Timeout id={id} setIsDropArea={setIsDropArea}  />)
+    })
+  }
+
+
+  const AddButton = () => (
+    <View style={{ ...styles.AddContainer, width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
+      <Pressable style={styles.button} onPress={ handleAddChrono }>
+        <Image
+          style={styles.buttonImage}
+          source={plusIcon}
+        />
+      </Pressable>
+    </View>
   )
-  
-  
-  const [dropLimit, setDropLimit] = useState(null);
 
-  
+
   return (
-    <View style={styles.mainContainer}>
-      <View style={styles.dropZone} onLayout={(e)=>{
-        const layout = e.nativeEvent.layout;
-        const dropBottom = layout.height + layout.y;
-        setDropLimit(dropBottom)
-      }} >
-        <Text style={styles.text}>Drop them here!</Text>
-      </View>
-      <View style={styles.ballContainer} />
-      <View style={styles.row}>
-        <Draggable dropLimit={dropLimit}>
-          <View style={{ width:50, height: 50, backgroundColor: 'blue' }} ></View>
-        </Draggable>
-      </View>
+    <View>
+      <ScrollView >
+            <View style={styles.container}>
+              {state.chronos.map((item, index)=>(
+                <View key={item.id} style={{ width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+                    {item.chrono()}                
+                </View>
+              ))}
+              {AddButton()}
+            </View>
+
+
+      </ScrollView>
+        { isDropArea && (
+              <View style={styles.trash}>
+                <Text>Drop me here</Text>
+              </View>
+        )}
     </View>
   )
 }
 
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1
-  },
-  ballContainer: {
-    height:200
-  },
-  row: {
-    flexDirection: "row"
+  container: {
+    width: '100%',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },  
-  dropZone: {
-    height: 200,
-    backgroundColor: "#00334d"
+  AddContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: Dimensions.get('window').height/3,
+    borderWidth: 4,
+    borderColor: "#ddd",
+  },  
+  button:{
+    width: 100,
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:'#E4E4E4',
+    borderRadius: 15
   },
-  text: {
-    marginTop: 25,
-    marginLeft: 5,
-    marginRight: 5,
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 25,
-    fontWeight: "bold"
+  buttonImage: {
+    width: 50,
+    height: 50,
+  },
+  trash: {
+    // display: 'none',
+    position: 'absolute',
+    top: Dimensions.get('window').height-150,
+    height: 150,
+    width: '100%',
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    opacity: .4,
   }
-});
+})
+
+

@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Animated, View, StyleSheet, PanResponder, Text, Pressable, Dimensions } from "react-native";
+import { Animated, View, StyleSheet, PanResponder, Pressable, Dimensions } from "react-native";
 
-const App = ({ dropLimit, handleDeleteItem, children }) => {
+const App = ({ setIsDropArea, dropLimit, handleDeleteItem, isDropArea, children }) => {
   const pan = useRef(new Animated.ValueXY()).current;
   const DropLimit = useRef(dropLimit);
   const isDraggable = useRef(false);
-  const isDropArea = useRef(false);
+  // const isDropArea = useRef(false); // elevated on level for animation purposes 
 
   useEffect(()=>{
     DropLimit.current = dropLimit;
@@ -30,16 +30,19 @@ const App = ({ dropLimit, handleDeleteItem, children }) => {
         {
           useNativeDriver: false,
           listener: (event, gesture) => {
-            if(gesture.moveY < DropLimit.current){
+            if(gesture.moveY > (Dimensions.get('window').height - DropLimit.current)){
               isDropArea.current = true;
+              setIsDropArea(true)
             } 
-            if(gesture.moveY > DropLimit.current){
+            if(gesture.moveY < (Dimensions.get('window').height - DropLimit.current)){
               isDropArea.current = false;
+              setIsDropArea(false)
             } 
           }
         }),
       onPanResponderRelease: (e, gesture ) => {
         isDraggable.current = false;
+        setIsDropArea(false)
 
         if(!isDropArea.current){
           Animated.spring(pan, {
