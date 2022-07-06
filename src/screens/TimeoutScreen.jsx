@@ -6,7 +6,7 @@ import plusIcon from '../assets/plusIcon.png';
 
 export default function ChronoScreen() {
   const { state, actions, dispatch } = useContext(AppContext);
-  const [itemWidth, setItemWidth] = useState(state.chronos.length > 3 ? 2 : 1);
+  const [itemWidth, setItemWidth] = useState(state.timeouts.length > 3 ? 2 : 1);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Timeout
 
   const handleAddTimeout = () => {
@@ -23,7 +23,7 @@ export default function ChronoScreen() {
   }
 
   const AddButton = () => (
-    <View style={{ ...styles.AddContainer, width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
+    <View style={{ ...styles.AddContainer, width: state.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
       <Pressable style={styles.button} onPress={ handleAddTimeout }>
         <Image
           style={styles.buttonImage}
@@ -39,7 +39,7 @@ export default function ChronoScreen() {
       <ScrollView >
             <View style={styles.container}>
               {state.timeouts.map((item, index)=>(
-                <View key={item.id} style={{ width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+                <View key={item.id} style={{ width: state.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
                     {item.timeout()}                
                 </View>
               ))}

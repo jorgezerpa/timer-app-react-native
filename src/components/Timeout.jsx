@@ -6,17 +6,21 @@ import { AppContext } from '../context/AppContext';
 import { PALETTE } from '../Constants';
 import Draggable from './Draggable';
 
+
 export default function Chronometer({ id, setIsDropArea }) {
-    const { state, actions, dispatch } = useContext(AppContext);
-    
     const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 600); // 10 minutes timer
+    
+    const [customexpiryTimestamp, setCustomexpiryTimestamp] = useState(false);
+    const { state, actions, dispatch } = useContext(AppContext);
     const { seconds, minutes, hours, days, isRunning, start, pause, resume, restart, } = useTimer({ expiryTimestamp, autoStart: false, onExpire: () => console.warn('onExpire called') });
     
+    const [inputTime, setInputTime] = useState({ hours: '', minutes: '', seconds: '' })
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 600); // 10 minutes timer
     const [isInit, setIsInit] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
     const isDropArea = useRef(false);
 
-    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(()=>{
       if(isDropArea.current) setIsDropArea(true);
@@ -30,7 +34,11 @@ export default function Chronometer({ id, setIsDropArea }) {
 
     const handleReset = () => {
       setIsInit(false);
-      restart(expiryTimestamp, false);
+      if(customexpiryTimestamp){
+        const newExpiryTimeStamp = new Date();
+        newExpiryTimeStamp.setSeconds(newExpiryTimeStamp.getSeconds()+customexpiryTimestamp);
+        restart( newExpiryTimeStamp || expiryTimestamp, false);
+      }
     }
     
     const handlePause = () => {
@@ -50,48 +58,78 @@ export default function Chronometer({ id, setIsDropArea }) {
     const handleIsEditing = () => {
         setIsEditing(true)
     }
-    const handleBlur = () => {
-        setIsEditing(false)
+
+    const handleSubmit = () => {
+      let { hours, minutes, seconds } = inputTime;
+      if(Number.isNaN(hours)) hours = 0;
+      if(Number.isNaN(minutes)) minutes = 0;
+      if(Number.isNaN(seconds)) seconds = 0;
+      const totalSeconds = ( hours * 3600 ) + ( minutes * 60 ) + seconds;
+      if(totalSeconds===0){
+        isEditing(false);
+        return;  
+      }
+
+      const expiryTimestamp = new Date();
+      expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + totalSeconds);
+      setCustomexpiryTimestamp(totalSeconds);
+      restart( expiryTimestamp, false); 
+      setIsEditing(false);
+    }
+
+    const handleInputChange = (item) => (value) => {
+        switch(item){
+          case 'hours': setInputTime((prev)=> ({ ...prev, hours: parseInt(value)  }) ); return
+          case 'minutes': setInputTime((prev)=> ({ ...prev, minutes: parseInt(value) }) ) ; return
+          case 'seconds': setInputTime((prev)=> ({ ...prev, seconds: parseInt(value) }) ) ; return
+      }
     }
 
     return (
       <Draggable setIsDropArea={setIsDropArea}  isDropArea={isDropArea} dropLimit={150} handleDeleteItem={handleRemoveTimeout} >
-          <View style={{...styles.container, width: state.chronos.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+          <View style={{...styles.container, width: state.timeouts.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
               <Pressable onPress={handleIsEditing}>
-                { !isEditing && <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
-                { isEditing && <TextInput selectTextOnFocus={true} onBlur={handleBlur} style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} /> }                
+                { !isEditing && <Text style={{...styles.numbers, fontSize: state.timeouts.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
+                { isEditing && (
+                    <View style={styles.inputsContainer}>
+                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={ handleInputChange('hours') } onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
+                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('minutes')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
+                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('seconds')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
+                    </View>
+                )}
               </Pressable>
               
-
-              <View style={styles.buttonContainer}>  
-                {!isInit && (
-                    <Pressable style={styles.button} onPress={ handleStart }>
-                        <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
-                            <Text style={styles.buttonText}> iniciar </Text>
-                        </LinearGradient>
-                    </Pressable>
-                )}
-                {isInit && (
-                    <Pressable style={styles.button} onPress={ isRunning ? handlePause : handleContinue }>   
-                        <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
-                            <Text style={styles.buttonText}>{ isRunning ? 'parar' : 'continuar' }</Text>
-                        </LinearGradient>
-                    </Pressable>
-                )}
-                {(isInit && !isRunning ) && (
-                  <Pressable style={styles.button} onPress={ handleReset }>
-                    <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.secondary.main, PALETTE.secondary.light]}>
-                        <Text style={styles.buttonText}> reiniciar </Text>
-                    </LinearGradient>
-                  </Pressable>
-                )}
-              </View>
-              
-              <View style={styles.spacing}></View>
-              <TextInput style={styles.title} placeholder='bloque' />
-          </View>
-
-
+            { !isEditing && (
+                <>
+                    <View style={styles.buttonContainer}>  
+                        {!isInit && (
+                            <Pressable style={styles.button} onPress={ handleStart }>
+                                <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
+                                    <Text style={styles.buttonText}> iniciar </Text>
+                                </LinearGradient>
+                            </Pressable>
+                        )}
+                        {isInit && (
+                            <Pressable style={styles.button} onPress={ isRunning ? handlePause : handleContinue }>   
+                                <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
+                                    <Text style={styles.buttonText}>{ isRunning ? 'parar' : 'continuar' }</Text>
+                                </LinearGradient>
+                            </Pressable>
+                        )}
+                        {(isInit && !isRunning ) && (
+                            <Pressable style={styles.button} onPress={ handleReset }>
+                            <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.secondary.main, PALETTE.secondary.light]}>
+                                <Text style={styles.buttonText}> reiniciar </Text>
+                            </LinearGradient>
+                            </Pressable>
+                        )}
+                        </View>
+                        
+                        <View style={styles.spacing}></View>
+                        <TextInput style={styles.title} placeholder='bloque' />
+                </>
+            )}
+            </View>
       </Draggable>
   )
 }
@@ -143,6 +181,20 @@ const styles = StyleSheet.create({
   },
   spacing: {
     height: 0,
+  },
+  inputsContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  input: {
+    width: 60,
+    textAlign: 'center',
+    borderColor: 'transparent',
+    borderBottomColor: '#4e4',
+    borderWidth: 3,
+    marginHorizontal: 5
   }
 })
 
