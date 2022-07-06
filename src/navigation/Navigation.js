@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 export default function Navigation() {
   return (
     <Tab.Navigator initialRouteName='home'>
-        <Tab.Screen name='home' component={HomeNavigation} options={{ header: ()=>null, tabBarLabel:'', tabBarIcon: ({ color, size })=><Icon name='user' color={color} size={size} /> }} />
+        <Tab.Screen name='tachometer-alt' component={HomeNavigation} options={{ header: ()=>null, tabBarLabel:'', tabBarIcon: ({ color, size })=><Icon name='home' color={color} size={size} /> }} />
     </Tab.Navigator>
   )
 }

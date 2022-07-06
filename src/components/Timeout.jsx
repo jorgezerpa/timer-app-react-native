@@ -9,15 +9,17 @@ import Draggable from './Draggable';
 
 export default function Chronometer({ id, setIsDropArea }) {
     const expiryTimestamp = new Date();
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+600) // by default, clock starts from 10min
     
     const [customexpiryTimestamp, setCustomexpiryTimestamp] = useState(false);
     const { state, actions, dispatch } = useContext(AppContext);
-    const { seconds, minutes, hours, days, isRunning, start, pause, resume, restart, } = useTimer({ expiryTimestamp, autoStart: false, onExpire: () => console.warn('onExpire called') });
+    const { seconds, minutes, hours, days, isRunning, start, pause, resume, restart, } = useTimer({ expiryTimestamp, autoStart: false, onExpire: handleOnExpire });
     
-    const [inputTime, setInputTime] = useState({ hours: '', minutes: '', seconds: '' })
+    const [inputTime, setInputTime] = useState({ hours: '00', minutes: '00', seconds: '00' })
     expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 600); // 10 minutes timer
     const [isInit, setIsInit] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isEnd, setIsEnd] = useState(false);
 
     const isDropArea = useRef(false);
 
@@ -33,12 +35,17 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
 
     const handleReset = () => {
+      setIsEnd(false);
       setIsInit(false);
       if(customexpiryTimestamp){
         const newExpiryTimeStamp = new Date();
         newExpiryTimeStamp.setSeconds(newExpiryTimeStamp.getSeconds()+customexpiryTimestamp);
-        restart( newExpiryTimeStamp || expiryTimestamp, false);
+        restart( newExpiryTimeStamp, false);
+        return;
       }
+      const expiryTimestamp = new Date();
+      expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+600) // by default, clock starts from 10min
+      restart( expiryTimestamp, false);
     }
     
     const handlePause = () => {
@@ -47,6 +54,7 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
 
     const handleContinue = () => {
+        setIsInit(true)
         resume()
     }
 
@@ -61,14 +69,15 @@ export default function Chronometer({ id, setIsDropArea }) {
 
     const handleSubmit = () => {
       let { hours, minutes, seconds } = inputTime;
-      if(Number.isNaN(hours)) hours = 0;
-      if(Number.isNaN(minutes)) minutes = 0;
+      hours= parseInt(hours);
+      minutes = parseInt(minutes);
+      seconds = parseInt(seconds);
+
+      if(Number.isNaN(hours)) hours = 0
+      if(Number.isNaN(minutes)) minutes = 0
       if(Number.isNaN(seconds)) seconds = 0;
+
       const totalSeconds = ( hours * 3600 ) + ( minutes * 60 ) + seconds;
-      if(totalSeconds===0){
-        isEditing(false);
-        return;  
-      }
 
       const expiryTimestamp = new Date();
       expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + totalSeconds);
@@ -79,10 +88,15 @@ export default function Chronometer({ id, setIsDropArea }) {
 
     const handleInputChange = (item) => (value) => {
         switch(item){
-          case 'hours': setInputTime((prev)=> ({ ...prev, hours: parseInt(value)  }) ); return
-          case 'minutes': setInputTime((prev)=> ({ ...prev, minutes: parseInt(value) }) ) ; return
-          case 'seconds': setInputTime((prev)=> ({ ...prev, seconds: parseInt(value) }) ) ; return
+          case 'hours': setInputTime((prev)=> ({ ...prev, hours: value  }) ); return
+          case 'minutes': setInputTime((prev)=> ({ ...prev, minutes: value }) ) ; return
+          case 'seconds': setInputTime((prev)=> ({ ...prev, seconds: value }) ) ; return
       }
+    }
+    
+
+    function handleOnExpire(){
+      setIsEnd(true);
     }
 
     return (
@@ -91,25 +105,37 @@ export default function Chronometer({ id, setIsDropArea }) {
               <Pressable onPress={handleIsEditing}>
                 { !isEditing && <Text style={{...styles.numbers, fontSize: state.timeouts.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
                 { isEditing && (
-                    <View style={styles.inputsContainer}>
-                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={ handleInputChange('hours') } onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
-                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('minutes')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
-                        <TextInput placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('seconds')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50}} />                
-                    </View>
+                    <>
+                      <View style={styles.inputsContainer}>
+                          <TextInput value={inputTime.hours} placeholder='00' keyboardType='number-pad' maxLength={2}   onChangeText={ handleInputChange('hours') } onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
+                          <TextInput value={inputTime.minutes} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('minutes')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
+                          <TextInput value={inputTime.seconds} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('seconds')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
+                      </View>
+
+                      <View style={styles.buttonContainer} >
+                        <Pressable style={styles.button} onPress={ ()=>{setIsEditing(false)} }>
+                            <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.secondary.main, PALETTE.secondary.light]}>
+                                <Text style={styles.buttonText}> cancelar </Text>
+                            </LinearGradient>
+                        </Pressable>
+                      </View>
+
+                    </>
+                    
                 )}
               </Pressable>
               
             { !isEditing && (
                 <>
                     <View style={styles.buttonContainer}>  
-                        {!isInit && (
+                        {(!isInit && !isEnd) &&  (
                             <Pressable style={styles.button} onPress={ handleStart }>
                                 <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
                                     <Text style={styles.buttonText}> iniciar </Text>
                                 </LinearGradient>
                             </Pressable>
                         )}
-                        {isInit && (
+                        {(isInit && !isEnd) && (
                             <Pressable style={styles.button} onPress={ isRunning ? handlePause : handleContinue }>   
                                 <LinearGradient style={styles.buttonGradient} start={{x:0, y:1}} end={{x:1, y:0}} colors={[PALETTE.primary.main, PALETTE.primary.light]}>
                                     <Text style={styles.buttonText}>{ isRunning ? 'parar' : 'continuar' }</Text>
@@ -189,7 +215,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   input: {
-    width: 60,
     textAlign: 'center',
     borderColor: 'transparent',
     borderBottomColor: '#4e4',

@@ -4,8 +4,6 @@ import clock from '../assets/clock.png';
 import metronome from '../assets/metronome.png';
 import sandClock from '../assets/sandclock.png';
 
-const image = { uri: "https://reactjs.org/logo-og.png" };
-
 export default function HomeScreen({ navigation }) {
   const onNavigation = (route) => {
       navigation.navigate(route);
@@ -32,7 +30,7 @@ export default function HomeScreen({ navigation }) {
           </ImageBackground>
         </View>
       </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback onPress={()=>onNavigation('intervalScreen')}>
+      {/* <TouchableWithoutFeedback onPress={()=>onNavigation('intervalScreen')}>
         <View style={styles.cardContainer}>
           <ImageBackground source={metronome} resizeMode="cover" style={styles.imageBackground}>
             <View style={styles.cardContent}>
@@ -40,7 +38,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </ImageBackground>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback> */}
 
     </ScrollView>
   )
