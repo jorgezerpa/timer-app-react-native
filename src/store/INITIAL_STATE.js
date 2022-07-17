@@ -1,7 +1,13 @@
 const INITIAL_STATE = {
-    chronos: [],
+    chronos: {
+        blurTimestamp: null,
+        chronos: [],
+    },
+    timeouts: {
+        blurTimestamp: null,
+        timeouts: [],
+    },
     intervals: [],
-    timeouts: [],
 }
 
 export default INITIAL_STATE;

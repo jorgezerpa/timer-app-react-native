@@ -1,14 +1,18 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions, Image } from 'react-native';
 import { AppContext } from '../context/AppContext';
 import Chronometer from '../components/Chronometer';
 import plusIcon from '../assets/plusIcon.png';
 
-export default function ChronoScreen() {
+export default function ChronoScreen({ navigation }) {
   const { state, actions, dispatch } = useContext(AppContext);
-  const [itemWidth, setItemWidth] = useState(state.chronos.length > 3 ? 2 : 1);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Chronometer
 
+  
+  navigation.addListener('blur', ()=>{
+    dispatch(actions.setBlurTimestamp('chronos'))
+  })
+  
   const handleAddChrono = () => {
     dispatch(actions.addChrono(getChrono()))
   }
@@ -18,13 +22,14 @@ export default function ChronoScreen() {
     return ({
       id: id,
       offset: null,
+      isRunning: false,
       chrono: ()=>(<Chronometer id={id} setIsDropArea={setIsDropArea}  />)
     })
   }
 
 
   const AddButton = () => (
-    <View style={{ ...styles.AddContainer, width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
+    <View style={{ ...styles.AddContainer, width: state.chronos.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
       <Pressable style={styles.button} onPress={ handleAddChrono }>
         <Image
           style={styles.buttonImage}
@@ -39,8 +44,8 @@ export default function ChronoScreen() {
     <View>
       <ScrollView >
             <View style={styles.container}>
-              {state.chronos.map((item, index)=>(
-                <View key={item.id} style={{ width: state.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+              {state.chronos.chronos.map((item, index)=>(
+                <View key={item.id} style={{ position: 'relative', width: state.chronos.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
                     {item.chrono()}                
                 </View>
               ))}

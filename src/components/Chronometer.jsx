@@ -12,6 +12,7 @@ export default function Chronometer({ id, setIsDropArea }) {
     const [isInit, setIsInit] = useState(false);
     const isDropArea = useRef(false);
 
+
     useEffect(()=>{
       if(isDropArea.current) setIsDropArea(true);
       if(!isDropArea.current) setIsDropArea(false);
@@ -23,23 +24,26 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
 
     const handleReset = () => {
+      dispatch(actions.setIsRunning({ object:'chronos', isRunning:false, id }))
       setIsInit(false);
       reset(null, false);
     }
     
     const handlePause = () => {
+      dispatch(actions.setIsRunning({ object:'chronos', isRunning:false, id }))
       setIsInit(true);
       pause();
     }
 
     const handleStart = () => {
+        dispatch(actions.setIsRunning({ object:'chronos', isRunning:true, id }))
         start();
     }
 
     return (
       <Draggable setIsDropArea={setIsDropArea}  isDropArea={isDropArea} dropLimit={150} handleDeleteItem={handleRemoveChrono} >
-          <View style={{...styles.container, width: state.chronos.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-              <Text style={{...styles.numbers, fontSize: state.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
+          <View style={{...styles.container, width: state.chronos.chronos.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+              <Text style={{...styles.numbers, fontSize: state.chronos.chronos.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text>
               <View style={styles.buttonContainer}>
                 
                 <Pressable style={styles.button} onPress={isRunning ? handlePause : handleStart }>

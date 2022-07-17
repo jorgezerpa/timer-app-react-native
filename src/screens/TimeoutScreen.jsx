@@ -4,10 +4,15 @@ import { AppContext } from '../context/AppContext';
 import Timeout from '../components/Timeout';
 import plusIcon from '../assets/plusIcon.png';
 
-export default function ChronoScreen() {
+export default function ChronoScreen({ navigation }) {
   const { state, actions, dispatch } = useContext(AppContext);
-  const [itemWidth, setItemWidth] = useState(state.timeouts.length > 3 ? 2 : 1);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Timeout
+
+  navigation.addListener('blur', ()=>{
+    dispatch(actions.setBlurTimestamp('timeouts'))
+  })
+  console.log(state.timeouts)
+  
 
   const handleAddTimeout = () => {
     dispatch(actions.addTimeout(getTimeout()))
@@ -18,12 +23,14 @@ export default function ChronoScreen() {
     const id =  'id-false'+ Math.random()*100000;
     return ({
       id: id,
+      offset: null,
+      isRunning: false,
       timeout: ()=>(<Timeout id={id} setIsDropArea={setIsDropArea}  />)
     })
   }
 
   const AddButton = () => (
-    <View style={{ ...styles.AddContainer, width: state.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
+    <View style={{ ...styles.AddContainer, width: state.timeouts.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width }}>            
       <Pressable style={styles.button} onPress={ handleAddTimeout }>
         <Image
           style={styles.buttonImage}
@@ -38,8 +45,8 @@ export default function ChronoScreen() {
     <View>
       <ScrollView >
             <View style={styles.container}>
-              {state.timeouts.map((item, index)=>(
-                <View key={item.id} style={{ width: state.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+              {state.timeouts.timeouts.map((item, index)=>(
+                <View key={item.id} style={{ width: state.timeouts.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
                     {item.timeout()}                
                 </View>
               ))}

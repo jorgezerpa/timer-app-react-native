@@ -35,6 +35,7 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
 
     const handleReset = () => {
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:false, id }))
       setIsEnd(false);
       setIsInit(false);
       if(customexpiryTimestamp){
@@ -49,16 +50,19 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
     
     const handlePause = () => {
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:false, id }))
         setIsInit(true);
         pause();
     }
 
     const handleContinue = () => {
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:true, id }))
         setIsInit(true)
         resume()
     }
 
     const handleStart = () => {
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:true, id }))
         setIsInit(true);
         start();
     }
@@ -68,6 +72,7 @@ export default function Chronometer({ id, setIsDropArea }) {
     }
 
     const handleSubmit = () => {
+
       let { hours, minutes, seconds } = inputTime;
       hours= parseInt(hours);
       minutes = parseInt(minutes);
@@ -83,6 +88,8 @@ export default function Chronometer({ id, setIsDropArea }) {
       expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + totalSeconds);
       setCustomexpiryTimestamp(totalSeconds);
       restart( expiryTimestamp, false); 
+
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:false, id }))
       setIsEditing(false);
     }
 
@@ -101,15 +108,15 @@ export default function Chronometer({ id, setIsDropArea }) {
 
     return (
       <Draggable setIsDropArea={setIsDropArea}  isDropArea={isDropArea} dropLimit={150} handleDeleteItem={handleRemoveTimeout} >
-          <View style={{...styles.container, width: state.timeouts.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
+          <View style={{...styles.container, width: state.timeouts.timeouts.length>3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
               <Pressable onPress={handleIsEditing}>
-                { !isEditing && <Text style={{...styles.numbers, fontSize: state.timeouts.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
+                { !isEditing && <Text style={{...styles.numbers, fontSize: state.timeouts.timeouts.length>3 ? 30 : 50}} >{hours.toString().padStart(2,'0')} : {minutes.toString().padStart(2,'0')} : {seconds.toString().padStart(2,'0')} </Text> }
                 { isEditing && (
                     <>
                       <View style={styles.inputsContainer}>
-                          <TextInput value={inputTime.hours} placeholder='00' keyboardType='number-pad' maxLength={2}   onChangeText={ handleInputChange('hours') } onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
-                          <TextInput value={inputTime.minutes} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('minutes')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
-                          <TextInput value={inputTime.seconds} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('seconds')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.length>3 ? 30 : 50, width: state.timeouts.length>3 ? 50 : 60,}} />                
+                          <TextInput value={inputTime.hours} placeholder='00' keyboardType='number-pad' maxLength={2}   onChangeText={ handleInputChange('hours') } onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.timeouts.length>3 ? 30 : 50, width: state.timeouts.timeouts.length>3 ? 50 : 60,}} />                
+                          <TextInput value={inputTime.minutes} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('minutes')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.timeouts.length>3 ? 30 : 50, width: state.timeouts.timeouts.length>3 ? 50 : 60,}} />                
+                          <TextInput value={inputTime.seconds} placeholder='00' keyboardType='number-pad' maxLength={2} onChangeText={handleInputChange('seconds')} onSubmitEditing={handleSubmit} style={{...styles.input, fontSize: state.timeouts.timeouts.length>3 ? 30 : 50, width: state.timeouts.timeouts.length>3 ? 50 : 60,}} />                
                       </View>
 
                       <View style={styles.buttonContainer} >
