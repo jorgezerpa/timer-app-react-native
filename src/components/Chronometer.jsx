@@ -8,7 +8,7 @@ import Draggable from './Draggable';
 
 export default function Chronometer({ id, setIsDropArea }) {
     const { state, actions, dispatch } = useContext(AppContext);
-    const { seconds, minutes, hours, days, isRunning, start, pause, reset, } = useStopwatch({ });
+    const { seconds, minutes, hours, isRunning, start, pause, reset, } = useStopwatch({ });
     const [isInit, setIsInit] = useState(false);
     const isDropArea = useRef(false);
 

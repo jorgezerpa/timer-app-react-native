@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react'
+import React, { useContext, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions, Image } from 'react-native';
 import { AppContext } from '../context/AppContext';
 import Chronometer from '../components/Chronometer';
@@ -11,7 +11,6 @@ export default function ChronoScreen() {
 
   const handleAddChrono = () => {
     dispatch(actions.addChrono(getChrono()))
-
   }
 
   function getChrono(){
@@ -47,7 +46,6 @@ export default function ChronoScreen() {
               ))}
               {AddButton()}
             </View>
-
 
       </ScrollView>
         { isDropArea && (

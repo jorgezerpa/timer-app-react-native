@@ -9,8 +9,9 @@ const Tab = createBottomTabNavigator();
 export default function Navigation() {
   return (
     <Tab.Navigator initialRouteName='home'>
-        <Tab.Screen name='tachometer-alt' component={HomeNavigation} options={{ header: ()=>null, tabBarLabel:'', tabBarIcon: ({ color, size })=><Icon name='home' color={color} size={size} /> }} />
+        <Tab.Screen name='homeNavigation' component={HomeNavigation} options={{ header: ()=>null, tabBarLabel:'', tabBarIcon: ({ color, size })=><Icon name='home' color={color} size={size} /> }} />
     </Tab.Navigator>
   )
 }
 
+// tachometer-alt
