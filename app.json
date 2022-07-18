@@ -2,14 +2,14 @@
   "expo": {
     "name": "timer-app",
     "slug": "timer-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.jpg",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -28,7 +28,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.jpg"
+      "favicon": "./assets/favicon.png"
     }
   }
 }

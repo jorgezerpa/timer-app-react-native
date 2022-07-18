@@ -7,21 +7,32 @@ import { PALETTE } from '../Constants';
 import Draggable from './Draggable';
 
 
-export default function Chronometer({ id, setIsDropArea }) {
+export default function Timeout({ id, setIsDropArea, isRunningProp, difference  }) {
+  const { state, actions, dispatch } = useContext(AppContext);
+  const timeoutIndex = state.timeouts.timeouts.findIndex(timeout=>timeout.id===id);
+  const [labelValue, setLabelValue] = useState(state.timeouts.timeouts[timeoutIndex].label);
+
     const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+600) // by default, clock starts from 10min
-    
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+ state.timeouts.timeouts[timeoutIndex].offset-difference) // by default, clock starts from 10min
+
     const [customexpiryTimestamp, setCustomexpiryTimestamp] = useState(false);
-    const { state, actions, dispatch } = useContext(AppContext);
-    const { seconds, minutes, hours, days, isRunning, start, pause, resume, restart, } = useTimer({ expiryTimestamp, autoStart: false, onExpire: handleOnExpire });
+    const { seconds, minutes, hours, days, isRunning, start, pause, resume, restart, } = useTimer({ expiryTimestamp, autoStart: isRunningProp, onExpire: handleOnExpire });
     
     const [inputTime, setInputTime] = useState({ hours: '00', minutes: '00', seconds: '00' })
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 600); // 10 minutes timer
-    const [isInit, setIsInit] = useState(false);
+    const [isInit, setIsInit] = useState(difference>0 ? true : false);
     const [isEditing, setIsEditing] = useState(false);
     const [isEnd, setIsEnd] = useState(false);
 
     const isDropArea = useRef(false);
+
+    useEffect(()=>{
+      return () => {
+        if(!isDropArea.current){
+          const newOffset = (hours * 3600) + (minutes * 60) + seconds; 
+          dispatch(actions.setOffset({ object: 'timeouts', offset: newOffset, id }))
+        }
+      }
+    }, [seconds])
 
 
     useEffect(()=>{
@@ -40,12 +51,12 @@ export default function Chronometer({ id, setIsDropArea }) {
       setIsInit(false);
       if(customexpiryTimestamp){
         const newExpiryTimeStamp = new Date();
-        newExpiryTimeStamp.setSeconds(newExpiryTimeStamp.getSeconds()+customexpiryTimestamp);
+        newExpiryTimeStamp.setSeconds(newExpiryTimeStamp.getSeconds()+state.timeouts.timeouts[timeoutIndex].expiryInit);
         restart( newExpiryTimeStamp, false);
         return;
       }
       const expiryTimestamp = new Date();
-      expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+600) // by default, clock starts from 10min
+      expiryTimestamp.setSeconds(expiryTimestamp.getSeconds()+state.timeouts.timeouts[timeoutIndex].expiryInit) // by default, clock starts from 10min
       restart( expiryTimestamp, false);
     }
     
@@ -89,7 +100,8 @@ export default function Chronometer({ id, setIsDropArea }) {
       setCustomexpiryTimestamp(totalSeconds);
       restart( expiryTimestamp, false); 
 
-      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:false, id }))
+      dispatch(actions.setIsRunning({ object:'timeouts', isRunning:false, id }));
+      dispatch(actions.setExpiryInit({ value: totalSeconds, id }));
       setIsEditing(false);
     }
 
@@ -104,6 +116,13 @@ export default function Chronometer({ id, setIsDropArea }) {
 
     function handleOnExpire(){
       setIsEnd(true);
+    }
+
+    function handleLabelChange(text){
+      setLabelValue(text);
+    }
+    const handleLabelSubmit = () => {
+      dispatch(actions.setLabel({ object: 'timeouts',  value: labelValue, id: id }))
     }
 
     return (
@@ -159,7 +178,7 @@ export default function Chronometer({ id, setIsDropArea }) {
                         </View>
                         
                         <View style={styles.spacing}></View>
-                        <TextInput style={styles.title} placeholder='bloque' />
+                        <TextInput style={styles.title} onBlur={handleLabelSubmit} onChangeText={handleLabelChange} value={labelValue} placeholder='bloque' />
                 </>
             )}
             </View>
@@ -171,7 +190,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
     position:'relative',
-    height: Dimensions.get('window').height/3,
+    height: Dimensions.get('window').height/3-40,
     justifyContent: 'flex-start',
     borderWidth: 2,
     borderColor: "#ddd",

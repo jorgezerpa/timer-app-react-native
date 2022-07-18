@@ -1,5 +1,5 @@
-import { ADD_CHRONO, REMOVE_CHRONO, ADD_TIMEOUT, REMOVE_TIMEOUT, SET_BLUR_TIMESTAMP, SET_IS_RUNNING, SET_OFFSET, SET_LABEL } from "./ACTION_TYPES.js";
-import { addChronoState, removeChronoState, addTimeoutState, removeTimeoutState, setBlurTimestamp, setIsRunning, setOffset, setLabel } from "./STATES.js";
+import { ADD_CHRONO, REMOVE_CHRONO, ADD_TIMEOUT, REMOVE_TIMEOUT, SET_BLUR_TIMESTAMP, SET_IS_RUNNING, SET_OFFSET, SET_LABEL, SET_EXPIRY_INIT } from "./ACTION_TYPES.js";
+import { addChronoState, removeChronoState, addTimeoutState, removeTimeoutState, setBlurTimestamp, setIsRunning, setOffset, setLabel, setExpiryInit } from "./STATES.js";
 
 export function appReducer(state, action){
     switch(action.type){
@@ -19,6 +19,8 @@ export function appReducer(state, action){
                 return setOffset(state, action)
         case SET_LABEL :
                 return setLabel(state, action)
+        case SET_EXPIRY_INIT :
+                return setExpiryInit(state, action)
        
         default:
                 // code ...   

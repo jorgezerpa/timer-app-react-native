@@ -6,3 +6,4 @@ export const SET_BLUR_TIMESTAMP = 'SET_BLUR_TIMESTAMP';
 export const SET_IS_RUNNING = 'SET_IS_RUNNING';
 export const SET_OFFSET = 'SET_OFFSET';
 export const SET_LABEL  = 'SET_LABEL';
+export const SET_EXPIRY_INIT  = 'SET_EXPIRY_INIT';

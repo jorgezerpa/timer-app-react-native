@@ -4,14 +4,14 @@ import { AppContext } from '../context/AppContext';
 import Timeout from '../components/Timeout';
 import plusIcon from '../assets/plusIcon.png';
 
-export default function ChronoScreen({ navigation }) {
+export default function TimeoutScreen({ navigation }) {
   const { state, actions, dispatch } = useContext(AppContext);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Timeout
+
 
   navigation.addListener('blur', ()=>{
     dispatch(actions.setBlurTimestamp('timeouts'))
   })
-  console.log(state.timeouts)
   
 
   const handleAddTimeout = () => {
@@ -22,10 +22,12 @@ export default function ChronoScreen({ navigation }) {
   function getTimeout(){
     const id =  'id-false'+ Math.random()*100000;
     return ({
+      expiryInit: 600, //default===10 minutes
       id: id,
-      offset: null,
+      offset: 600, //in this case, offset === currentExpiryTimestamp // default 10min
       isRunning: false,
-      timeout: ()=>(<Timeout id={id} setIsDropArea={setIsDropArea}  />)
+      label: '',
+      timeout: (difference, isRunning)=>(<Timeout id={id} setIsDropArea={setIsDropArea} isRunningProp={isRunning} difference={difference}  />)
     })
   }
 
@@ -40,16 +42,29 @@ export default function ChronoScreen({ navigation }) {
     </View>
   )
 
-
+    // console.log(state.timeouts);
+    
   return (
     <View>
       <ScrollView >
             <View style={styles.container}>
-              {state.timeouts.timeouts.map((item, index)=>(
+              {state.timeouts.timeouts.map((item, index)=>{
+                  let difference = 0;
+                  if(state.timeouts.timeouts[index].isRunning && state.timeouts.blurTimestamp){
+                    const current = new Date().getTime();
+                    const blur = state.timeouts.blurTimestamp.getTime();
+                    difference = Math.abs(Math.floor( current/1000 - blur/1000 ))
+                  }
+                  if(!state.timeouts.timeouts[index].isRunning && state.timeouts.blurTimestamp){
+                    difference = 0;
+                  }
+
+                return(
                 <View key={item.id} style={{ width: state.timeouts.timeouts.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-                    {item.timeout()}                
+                    {item.timeout(difference, state.timeouts.timeouts[index].isRunning)}                
                 </View>
-              ))}
+                )
+                })}
               {AddButton()}
             </View>
 

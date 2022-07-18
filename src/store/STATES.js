@@ -89,23 +89,20 @@ export function setOffset(state, action){
         const chronos = state.chronos.chronos;
         const index = state.chronos.chronos.findIndex(chrono => chrono.id === action.payload.id);
         chronos[index].offset = action.payload.offset;
-    return {
-        ...state,
-        chronos: { ...state.chronos, chronos: chronos }
+        return {
+            ...state,
+            chronos: { ...state.chronos, chronos: chronos }
         }    
     }
     
-    if(action.payload.object === 'timeouts'){ 
-        return state;    
-    //     const newTimeoutsArray =  state.timeouts.timeouts.map(timeout=>{
-    //         if(timeout.id === action.payload.id) timeout.isRunning = action.payload.isRunning;
-    //         return timeout;
-    //     });
-    //     return ({
-    //         ...state,
-    //         timeouts: { ...state.timeouts, timeouts: [...newTimeoutsArray] }
-    //     })    
-        
+    if(action.payload.object === 'timeouts'){  
+        const timeouts = state.timeouts.timeouts;
+        const index = state.timeouts.timeouts.findIndex(timeout => timeout.id === action.payload.id);
+        timeouts[index].offset = action.payload.offset;
+        return {
+            ...state,
+            timeouts: { ...state.timeouts, timeouts:timeouts }
+        }    
     }
 }
 
@@ -120,6 +117,26 @@ export function setLabel(state, action){
         chronos: { ...state.chronos, chronos: chronos }
         }    
     }
-}   
+    if(action.payload.object === 'timeouts'){
+        const timeouts = state.timeouts.timeouts;
+        const index = state.timeouts.timeouts.findIndex(timeout => timeout.id === action.payload.id);
+        timeouts[index].label = action.payload.value;
+    return {
+        ...state,
+        timeouts: { ...state.timeouts, timeouts: timeouts }
+        }    
+    }
+}  
+
+export function setExpiryInit(state, action){
+    const { timeouts } = state.timeouts;
+    const index = timeouts.findIndex(timeout=>timeout.id === action.payload.id);
+    timeouts[index].expiryInit = action.payload.value;
+
+    return {
+        ...state,
+        timeouts: { ...state.timeouts, timeouts: timeouts }
+    };
+}
 
 

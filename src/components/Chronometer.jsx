@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
     position:'relative',
-    height: Dimensions.get('window').height/3,
+    height: Dimensions.get('window').height/3-40,
     justifyContent: 'flex-start',
     borderWidth: 2,
     borderColor: "#ddd",
