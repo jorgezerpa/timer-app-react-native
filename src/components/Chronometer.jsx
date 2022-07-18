@@ -1,22 +1,39 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { StyleSheet, View, Text,Pressable, Dimensions, TextInput } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStopwatch } from 'react-timer-hook';
 import { AppContext } from '../context/AppContext';
 import { PALETTE } from '../Constants';
 import Draggable from './Draggable';
 
-export default function Chronometer({ id, setIsDropArea }) {
+export default function Chronometer({ id, setIsDropArea, offset, isRunningProp }) {
     const { state, actions, dispatch } = useContext(AppContext);
-    const { seconds, minutes, hours, isRunning, start, pause, reset, } = useStopwatch({ });
-    const [isInit, setIsInit] = useState(false);
+    const chronoIndex = state.chronos.chronos.findIndex(chrono => chrono.id === id);
+    const myDate = new Date();
+    myDate.setSeconds(myDate.getSeconds() + offset);
+    const { seconds, minutes, hours, isRunning, start, pause, reset, } = useStopwatch({ autoStart: isRunningProp, offsetTimestamp: myDate });
+    const [isInit, setIsInit] = useState(offset>0 ? true : false);
+    const [labelValue, setLabelValue] = useState(state.chronos.chronos[chronoIndex].label);
     const isDropArea = useRef(false);
+
+    useEffect(()=>{
+      return () => {
+        if(!isDropArea.current){
+          const newOffset = (hours * 3600) + (minutes * 60) + seconds; 
+          dispatch(actions.setOffset({ object: 'chronos', offset: newOffset, id }))
+        }
+      }
+    }, [seconds])
 
 
     useEffect(()=>{
       if(isDropArea.current) setIsDropArea(true);
       if(!isDropArea.current) setIsDropArea(false);
     },[isDropArea])
+
+    // useEffect(()=>{
+    // }, [seconds])
 
 
     const handleRemoveChrono = () => {
@@ -38,6 +55,13 @@ export default function Chronometer({ id, setIsDropArea }) {
     const handleStart = () => {
         dispatch(actions.setIsRunning({ object:'chronos', isRunning:true, id }))
         start();
+    }
+
+    const handleChangeText = (text) => {
+      setLabelValue(text)
+    }
+    const handleLabelSubmit = () => {
+      dispatch(actions.setLabel({ object: 'chronos',  value: labelValue, id: id }))
     }
 
     return (
@@ -73,7 +97,7 @@ export default function Chronometer({ id, setIsDropArea }) {
               )} */}
 
               <View style={styles.spacing}></View>
-              <TextInput style={styles.title} placeholder='bloque' />
+              <TextInput style={styles.title} value={labelValue} onBlur={handleLabelSubmit} onChangeText={handleChangeText} placeholder='bloque' />
           </View>
       </Draggable>
   )

@@ -84,3 +84,42 @@ export function setIsRunning(state, action){
 }
 
 
+export function setOffset(state, action){
+    if(action.payload.object === 'chronos'){
+        const chronos = state.chronos.chronos;
+        const index = state.chronos.chronos.findIndex(chrono => chrono.id === action.payload.id);
+        chronos[index].offset = action.payload.offset;
+    return {
+        ...state,
+        chronos: { ...state.chronos, chronos: chronos }
+        }    
+    }
+    
+    if(action.payload.object === 'timeouts'){ 
+        return state;    
+    //     const newTimeoutsArray =  state.timeouts.timeouts.map(timeout=>{
+    //         if(timeout.id === action.payload.id) timeout.isRunning = action.payload.isRunning;
+    //         return timeout;
+    //     });
+    //     return ({
+    //         ...state,
+    //         timeouts: { ...state.timeouts, timeouts: [...newTimeoutsArray] }
+    //     })    
+        
+    }
+}
+
+export function setLabel(state, action){
+    // payload -> { object, value, id }
+    if(action.payload.object === 'chronos'){
+        const chronos = state.chronos.chronos;
+        const index = state.chronos.chronos.findIndex(chrono => chrono.id === action.payload.id);
+        chronos[index].label = action.payload.value;
+    return {
+        ...state,
+        chronos: { ...state.chronos, chronos: chronos }
+        }    
+    }
+}   
+
+

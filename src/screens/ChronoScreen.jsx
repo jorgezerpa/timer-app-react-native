@@ -7,10 +7,12 @@ import plusIcon from '../assets/plusIcon.png';
 export default function ChronoScreen({ navigation }) {
   const { state, actions, dispatch } = useContext(AppContext);
   const [isDropArea, setIsDropArea] = useState(false) // pass for prop to Draggable on Chronometer
-
+  // const [offsetToSave, setOffsetToSave] = useState(0);
+  const [saveOffset, setSaveOffset] = useState(false);
   
   navigation.addListener('blur', ()=>{
-    dispatch(actions.setBlurTimestamp('chronos'))
+    dispatch(actions.setBlurTimestamp('chronos'));
+    setSaveOffset(true);
   })
   
   const handleAddChrono = () => {
@@ -21,9 +23,10 @@ export default function ChronoScreen({ navigation }) {
     const id =  'id-false'+ Math.random()*100000;
     return ({
       id: id,
-      offset: null,
+      offset: 0, // 10 min
       isRunning: false,
-      chrono: ()=>(<Chronometer id={id} setIsDropArea={setIsDropArea}  />)
+      label: '',
+      chrono: (offset, isRunning)=>(<Chronometer saveOffset={saveOffset} id={id} setIsDropArea={setIsDropArea} offset={offset} isRunningProp={isRunning}  />)
     })
   }
 
@@ -44,11 +47,25 @@ export default function ChronoScreen({ navigation }) {
     <View>
       <ScrollView >
             <View style={styles.container}>
-              {state.chronos.chronos.map((item, index)=>(
+              {state.chronos.chronos.map((item, index)=>{
+                let offset = 0;
+                if(state.chronos.blurTimestamp && state.chronos.chronos[index].isRunning){
+                  const blurTimestamp = state.chronos.blurTimestamp.getTime();
+                  const currentDate = new Date().getTime();
+                  const difference = Math.abs((Math.floor((currentDate - blurTimestamp)/1000)));
+                  offset = difference + state.chronos.chronos[index].offset;
+                }
+                if(state.chronos.blurTimestamp && !state.chronos.chronos[index].isRunning){
+                  offset = state.chronos.chronos[index].offset;
+                }
+
+                return(
                 <View key={item.id} style={{ position: 'relative', width: state.chronos.chronos.length > 3 ? Dimensions.get('window').width/2 : Dimensions.get('window').width  }}>
-                    {item.chrono()}                
+                    {item.chrono(offset, state.chronos.chronos[index].isRunning)}                
                 </View>
-              ))}
+                
+                )
+              })}
               {AddButton()}
             </View>
 
